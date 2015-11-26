@@ -17,7 +17,10 @@ else
   uri = URI("https://api.trello.com/1/members/me/boards?key=#{key}&token=#{token}")
   body = Net::HTTP.get(uri)
   data = JSON.parse(body)
-  boards = data.map { |d| Board.new(d['name'], d['url']) }
+
+  boards = data
+    .reject { |d| d['closed'] == true }
+    .map { |d| Board.new(d['name'], d['url']) }
 
   File.open('.result_cache', 'w') do |file|
     file.truncate(0)
